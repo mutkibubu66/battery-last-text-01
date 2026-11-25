@@ -14,6 +14,12 @@ A phone battery's last text to the charger it waited for all day — one line, 1
 
 The setup is a small act of loyalty — the battery held on at 1% so its owner could finish one more call — and the payoff lands in the last words: the battery is dying in the owner's hand while the charger sits across the room, and its final wish is a message passed on to the cable it loved. The joke turns on that last twist: the battery isn't angry at the charger, it's sending it a love note through the owner who left it too late.
 
+The line is built as a text message, not a poem: it opens mid-thought ("I waited all day"), names the sacrifice in plain words, then spends its last breath on the cable — the one piece of the charging setup the battery actually touched every night. That is the angle beyond the obvious dying-battery complaint: the battery's real relationship was never with the wall or the phone, it was with the cable, and its goodbye goes to the cable.
+
+## The gate
+
+The program enforces the bounty gate before it writes anything: the line must be a single non-blank line, 1–200 characters, valid UTF-8, with no leading or trailing whitespace and no hidden newline or carriage return. After writing, it reads `/output/entry.txt` back and asserts the file holds exactly the line plus one trailing newline — so what the judge reads is exactly what was validated.
+
 ## Run it
 
 ```sh

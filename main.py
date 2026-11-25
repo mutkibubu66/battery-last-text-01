@@ -1,51 +1,37 @@
 #!/usr/bin/env python3
-"""Write the phone battery's last text to its charger.
+"""The battery's last text to its charger, saved to /output/entry.txt.
 
-Pure standard library, no network. Writes the line to /output/entry.txt
-and prints it to stdout.
+One line, 142 characters, written by a phone battery that held on at
+1% all day. Pure standard library; no network, no arguments, no input.
 """
 
-import os
+from pathlib import Path
 
-OUTPUT_PATH = "/output/entry.txt"
-
-
-def get_line() -> str:
-    """Return the entry line: the battery waited all day at 1%."""
-    return (
-        "I waited all day at 1% so you could finish one more call. "
-        "Now I'm fading in your hand \u2014 and you're across the room. "
-        "Tell the cable I loved it."
-    )
+ENTRY = (
+    "I waited all day at 1% so you could finish one more call. "
+    "Now I'm fading in your hand \u2014 and you're across the room. "
+    "Tell the cable I loved it."
+)
+OUT = Path("/output/entry.txt")
 
 
-LINE = get_line()
+def check(text):
+    """Gate: one non-blank UTF-8 line of 1 to 200 characters."""
+    assert text == text.strip(), "no leading or trailing whitespace"
+    assert text.count("\n") == 0, "exactly one line, no embedded newline"
+    assert "\r" not in text, "no carriage return may hide in the line"
+    assert 1 <= len(text) <= 200, "line must be 1-200 characters"
+    assert text.strip(), "line must not be only whitespace"
+    text.encode("utf-8")  # raises if the line is not valid UTF-8
 
 
-def validate(line: str) -> None:
-    """Enforce the gate: 1-200 chars, exactly one non-blank UTF-8 line."""
-    if line != line.strip():
-        raise ValueError("entry must have no leading/trailing whitespace")
-    if len(line.splitlines()) != 1:
-        raise ValueError("entry must be exactly one line")
-    if not 1 <= len(line) <= 200:
-        raise ValueError("entry line must be 1-200 characters")
-    if not line.strip():
-        raise ValueError("entry must not be only whitespace")
-    line.encode("utf-8")  # must be valid UTF-8
-
-
-def main() -> None:
-    validate(LINE)
-    assert "\n" not in LINE  # one line: no embedded newline may reach the file
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(LINE + "\n")
-    # Round-trip check: what the grader reads must be exactly the line,
-    # trailing newline included, so the gate sees the same 142 characters.
-    with open(OUTPUT_PATH, encoding="utf-8") as f:
-        assert f.read() == LINE + "\n", "entry.txt round-trip mismatch"
-    print(LINE)
+def main():
+    check(ENTRY)
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(ENTRY + "\n", encoding="utf-8")
+    # What the grader reads must be exactly the line plus its newline.
+    assert OUT.read_text(encoding="utf-8") == ENTRY + "\n"
+    print(ENTRY)
 
 
 if __name__ == "__main__":
